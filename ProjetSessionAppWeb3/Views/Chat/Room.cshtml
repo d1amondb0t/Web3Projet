@@ -1,0 +1,105 @@
+﻿@page
+@model ProjetSessionAppWeb3.Models.Message
+<div class="section">
+    <div class="container border border-primary">
+
+        <div class="row">
+            <div class="col-12">
+
+                @foreach (var Message in (ViewBag.chatMessages))
+                {
+                    <div class="row mb-2 p-2">
+                        <div class="col-12 text-white bg-primary rounded">
+                            <div class="row border-bottom border-white">
+                                <div class="col-6 text-left ">
+                                    <p class="text-left font-weight-bold">@Message.Username :<p />
+                                </div>
+                                <div class="col-6 text-right">
+                                    <p>@Message.DateMessaged</p>
+                                </div>
+                            </div>
+                            <p>@Message.Description</p>
+                        </div>
+                    </div>
+                    @*if (ViewBag.userSession.IdUser == Message.IdUser)
+            {
+                <div class="row mb-2 p-2">
+                    <div class="col-6 text-white bg-primary rounded">
+                        <div class="row border-bottom border-white">
+                            <div class="col-6 text-left ">
+                                <p class="text-left font-weight-bold">@Message.Username<p />
+                            </div>
+                            <div class="col-6 text-right">
+                                <p>@Message.DateMessaged</p>
+                            </div>
+                        </div>
+                        <p>@Message.Description</p>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="row mb-2 p-2">
+                    <div class="col-6 text-white bg-info offset-6 rounded">
+                        <div class="row border-bottom border-white">
+                            <div class="col-6 text-left">
+                                <p class="text-left font-weight-bold">@Message.Username<p />
+                            </div>
+                            <div class="col-6 text-right">
+                                <p>@Message.DateMessaged</p>
+                            </div>
+                        </div>
+                        <p>@Message.Description</p>
+                    </div>
+                </div>
+            }*@
+                }
+            </div>
+        </div>
+
+       <div id="test"></div>
+
+       
+        <div class="container bg-white">
+            <div class="row">&nbsp;</div>
+            <div class="row">
+                <div class="col-4"><input type="hidden" value="@ViewBag.idChat" id="chatId" /></div>
+                <div class="col-4"><input type="hidden" value="@ViewBag.userSession.IdUser" id="userId" /></div>
+
+                <div class="col-4"><input type="hidden" value="@ViewBag.userSession.Username" id="userInput" /></div>
+            </div>
+
+
+            <div class="row border-top border-primary mb-3">
+                <div class="col-10">
+                    <input class="form-control" type="text" id="messageInput" placeholder="Message Here..." />
+                </div>
+                <div class="col-2">
+                    <input class="btn btn-primary" type="button" id="sendButton"  value="Send Message" />
+                </div>
+            </div>
+
+            @*<div class="row">&nbsp;</div>*@
+            @*<div class="row">
+                <div class="col-6">
+                    <input type="button" id="sendButton" value="Send Message" />
+                </div>
+            </div>*@
+        </div>
+        @*<div class="row">
+            <div class="col-12">
+                <hr />
+            </div>
+        </div>*@
+    </div>
+</div>
+
+<script src="~/js/signalr/dist/browser/signalr.js"></script>
+<script src="~/js/chat.js"></script>
+<script>
+    
+
+
+
+
+</script>

@@ -1,0 +1,266 @@
+﻿@model ProjetSessionAppWeb3.Models.User
+
+@{
+    ViewData["Title"] = "Chat";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="p-5 ">
+    @*@if (ViewBag.userSession != null)
+        {
+            <p>@ViewBag.userSession.IdUser</p>
+            <p>@ViewBag.userSession.Username</p>
+        }*@
+    <div class="container">
+        <div class="p-2 row justify-content-begin pb-2">
+            <div class="col-2">
+                <h4>Chats</h4>
+            </div>
+            <div class="offset-8 offset-lg-7" col-2">
+                @*<button class=" btn btn-primary" data-toggle="modal" data-target="#addChat">Add chat</button>*@
+                <button class=" btn btn-primary" id="buttonAddChat" onclick="toggleAddChat()">Add chat</button>
+            </div>
+        </div>
+
+        <form class="border border-dark rounded p-5 d-none mb-3 col-md-12 col-lg-10" asp-controller="Chat" asp-action="AddChat" method="post" id="addChat">
+            <div class="mb-3">
+                <div class="mb-3">
+                    <h3 class="text-center">Add Chat</h3>
+                </div>
+                @if (ViewData["errorMessageCreateChat"] != null)
+                {
+                    <div class="mb-3 alert alert-danger text-white">
+                        @ViewBag.ErrorMessage
+                    </div>
+                }
+                <div class="mb-3">
+                    <label class="form-label " type="text">Chat Name:</label>
+                    <input type="text" name="chatName" id="chatName" class="form-control" />
+                </div>
+            </div>
+            @*<div class="mb-3">
+                    <label class="form-label " type="text">Chat creator Id:</label>
+                    <input type="text" name="idCreator" id="idCreator" placeholder="@ViewBag.userSession.IdUser" value="@ViewBag.userSession.IdUser" class="form-control" readonly />
+                </div>*@
+            <div class=" btn-group mb-3 float-right">
+                <button type="submit" class="btn btn-primary">Create Chat</button>
+            </div>
+        </form>
+
+        <div class="row">
+            @foreach (var Chat in (IEnumerable<Chat>)ViewData["chats"])
+            {
+                <div class=" col-sm-12 col-lg-5 border border-primary rounded p-lg-4 p-3 mb-3 mr-2" id="chat_@Chat.IdChat" >
+                    <div class="row">
+                        <div class="text-begin col-3">
+                            <p>ID Chat:</p>
+                        </div>
+                        <div class="text-begin col-1">
+                            @Chat.IdChat
+                        </div>
+                        <div class="btn-group offset-4 col-4 float-right ">
+                            <form method="post">
+                                <button class="btn btn-primary" asp-controller="Chat" asp-action="Room" asp-route-id="@Chat.IdChat">
+                                    <i class="bi bi-box-arrow-in-right"></i>
+                                </button>
+
+                            </form>
+                            <button class="btn btn-primary" id="@("button"+Chat.IdChat)" onclick="toggleAddUserToChat(@Chat.IdChat)">
+                                <i class="bi bi-person-plus-fill"></i>
+                            </button>
+                            @*<button class="btn btn-primary">
+            <i class="bi bi-person-plus-fill"></i>
+        </button>*@
+                        <button class="btn btn-sm btn-primary" onclick="deleteChat(@Chat.IdChat)">
+                            <i class="bi-x"></i>
+                        </button>
+                            
+                            @*<button class="btn btn-primary">
+            <i class="bi bi-person-plus-fill"></i>
+        </button>*@
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="text-begin col-6">
+                            <p>Nom du Chat:</p>
+                        </div>
+                        <div class="text-right col-6">
+                            @Chat.ChatName
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="text-begin col-6">
+                            <p>ID du createur du chat:</p>
+                        </div>
+                        <div class="text-right col-6">
+                            @Chat.IdCreator
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="text-begin col-6">
+                            <p>Chat Creator Name:</p>
+                        </div>
+                        <div class="text-right col-6">
+                            @ViewBag.userSession.Username
+                        </div>
+                    </div>
+                    <div class="row justify-content-center ">
+                        <form class="form d-none mt-3 border border-dark p-5" id="@Chat.IdChat">
+                            <div class="mb-3">
+                                <h5 class="text-center">Add a user to Chat @Chat.ChatName</h5>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label " type="text">User Id:</label>
+                                <input type="text" name="userId" id="@("addUser"+Chat.IdChat)" class="form-control" />
+                            </div>
+                            <div class=" mb-3 float-right">
+                                <button type="submit" class="btn btn-primary" onclick="addUserToChat(@Chat.IdChat)">Create Chat</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+@*<div class="modal fade" id="addChat" tabindex="-1" role="dialog" aria-labelledby="addChatLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addChatLabel">Create Chat</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form asp-controller="Chat" asp-action="AddChat" method="post">
+                        <div class="mb-3">
+                            <label class="form-label " type="text">Chat Name:</label>
+                            <input type="text" name="chatName" id="chatName" class="form-control" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label " type="text">Chat creator Id:</label>
+                            <input type="text" name="idCreator" id="idCreator" placeholder="@ViewBag.userSession.IdUser" value="@ViewBag.userSession.IdUser" class="form-control" readonly />
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" data-save="modal"  onclick="createChat()" >Create Chat</button>
+                </div>
+            </div>
+        </div>
+    </div>*@
+@*<div class="modal fade" id="addUserToChat" tabindex="-1" role="dialog" aria-labelledby="addUserToChatLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addUserToChatLabel">Add a User to Chat @Chat.IdChat</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="mb-3">
+                            <label class="form-label " type="text">Chat Name:</label>
+                            <input type="text" name="chatName" id="chatName" class="form-control" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label " type="text">Chat creator Id:</label>
+                            <input type="text" name="idCreator" id="idCreator" placeholder="@ViewBag.userSession.IdUser" value="@ViewBag.userSession.IdUser" class="form-control" readonly />
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" data-save="modal" onclick="addUserToChat()">Add User</button>
+                </div>
+            </div>
+        </div>
+    </div>*@
+
+<script>
+    function toggleAddChat() {
+        console.log('test');
+
+        document.getElementById("addChat").classList.toggle('d-none');
+        if (!document.getElementById("addChat").classList.contains('d-none')) {
+            document.getElementById("buttonAddChat").classList.remove('btn-primary');
+            document.getElementById("buttonAddChat").classList.add('btn-danger');
+            document.getElementById("buttonAddChat").innerHTML = "Close";
+        } else {
+            document.getElementById("buttonAddChat").classList.remove('btn-danger');
+            document.getElementById("buttonAddChat").classList.add('btn-primary');
+            document.getElementById("buttonAddChat").innerHTML = "Add Chat";
+        }
+    }
+
+    function toggleAddUserToChat(idChat) {
+        document.getElementById(idChat).classList.toggle('d-none');
+        if (!document.getElementById(idChat).classList.contains('d-none')) {
+            document.getElementById("button"+idChat).classList.remove('btn-primary');
+            document.getElementById("button"+idChat).classList.add('btn-danger');
+        } else {
+            document.getElementById("button" + idChat).classList.remove('btn-danger');
+            document.getElementById("button"+idChat).classList.add('btn-primary');
+        }
+    }
+
+    function addUserToChat(idChat) {
+        const xhr = new XMLHttpRequest();
+        var idUser = document.getElementById("addUser" + idChat).value;
+        console.log(idUser);
+        console.log(idChat);
+        const url = "https://localhost:44384/Chat/AddUserToChat?idChat=" + idChat+"&idUser="+idUser;
+        xhr.open("POST", url, true);
+        xhr.send(idChat, idUser);
+    }
+
+    function deleteChat(idChat) {
+        console.log(idChat);
+        const url = "https://localhost:44384/Chat/DeleteChat?idChat=" + idChat;
+        const xhr = new XMLHttpRequest();
+
+        xhr.open("DELETE", url, true);
+        xhr.send(idChat);
+        var row = document.getElementById("chat_" + idChat);
+        row.parentNode.removeChild(row);
+    }
+    function buttonRoom(id) {
+        //console.log(idChat);
+        const url = "https://localhost:44384/Chat/Room";
+        const xhr = new XMLHttpRequest();
+        xhr.onload = function () { // listen for state changes
+            if (this.status == 200) { // when completed we can move away
+                window.location = "Chat/Room/" + id;
+            }
+        }
+        xhr.open("GET", url, true);
+        xhr.send();
+
+    }
+
+
+    //function createChat() {
+    //    console.log("test");
+    //    let xhr = new XMLHttpRequest();
+    //    let chatname = document.getElementById("chatName").value;
+
+    //    /*console.log(chatname.value + "here");*/
+    //    if (chatname.value == undefined || chatname.value == null) {
+    //        console.log("closing chat here");
+    //        toggleAddChat();
+    //    }
+    //    else if (chatname.value != undefined || chatname.value != null) {
+
+    //        console.log(chatname);
+
+    //        xhr.open("POST", 'https://localhost:44384/Chat/Chat');
+    //        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    //        xhr.send("chatName=" + chatname.value);
+    //    }
+    //}
+
+</script>
